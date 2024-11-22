@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../screens/auth/login_screen.dart';
 import '../screens/Businessman/owner_home_screen.dart';
-//import '../screens/users/user_home_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../screens/Businessman/owner_add_screen.dart'; 
+import '../screens/Businessman/owner_reserve_screen.dart';
 
-
-// easybook_app.dart
 class EasyBookApp extends StatelessWidget {
-  @override
+ @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'EasyBook',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',  // Ruta inicial que manejará el login
+      initialRoute: '/', 
       routes: {
         '/': (context) => LoginScreen(),
+        '/create_business': (context) => CreateBusinessScreen(),
       },
       onGenerateRoute: (settings) {
+        // Verifica la ruta y los parámetros que estás pasando
+        if (settings.name == '/business_reservations') {
+          final businessId = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) => BusinessReservationsScreen(businessId: businessId),
+          );
+        }
+
         return MaterialPageRoute(
           builder: (context) => FutureBuilder<Map<String, dynamic>>(
             future: checkUserRole(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();  // Cargando...
+                return Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
               }
 
               if (snapshot.hasData) {
@@ -32,11 +42,11 @@ class EasyBookApp extends StatelessWidget {
                 if (role == 'owner') {
                   return OwnerHomeScreen();
                 } else if (role == 'user') {
-                 // return UserHomeScreen();
+                  // return UserHomeScreen();
                 }
               }
 
-              return LoginScreen();  // Si no hay datos o el usuario no está logueado, vuelve al login
+              return LoginScreen();
             },
           ),
         );
@@ -51,11 +61,9 @@ class EasyBookApp extends StatelessWidget {
     final ownerId = prefs.getString('ownerId');
 
     if (token != null && ownerId != null) {
-      // Llama al API o usa la lógica necesaria para obtener el rol
-      // Aquí simplemente retornamos un rol de ejemplo, deberías llamarlo desde tu API
-      return {'role': 'owner'};  // Asumiendo que el rol del usuario es 'owner', cámbialo según corresponda.
+      return {'role': 'owner'}; // Cambia según la lógica de tu API
     }
 
-    return {'role': 'guest'};  // Si no hay token o ownerId, asume que el usuario es un invitado
+    return {'role': 'guest'}; // Si no hay token o ownerId, asume que el usuario es un invitado
   }
 }

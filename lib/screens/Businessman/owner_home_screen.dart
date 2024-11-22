@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Businessman/owner_details_screen.dart';
+import '../Businessman/owner_reserve_screen.dart';  
 
 class OwnerHomeScreen extends StatefulWidget {
   @override
@@ -63,18 +64,26 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     }
   }
 
-  void _navigateToCreateBusiness() {
-    Navigator.pushNamed(context, '/create_business');
+  // Navegar a la pantalla de detalles de un negocio
+  void _navigateToBusinessDetails(int businessId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BusinessDetailsScreen(businessId: businessId),
+      ),
+    );
   }
 
- void _navigateToBusinessDetails(int businessId) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => BusinessDetailsScreen(businessId: businessId),
-    ),
-  );
-}
+  // Navegar a la pantalla de reservas del negocio
+  void _navigateToBusinessReservations(int businessId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BusinessReservationsScreen(businessId: businessId),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,16 +91,12 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
         title: Text('Panel del Propietario', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.blueAccent,
         actions: [
+          // Botón para añadir un nuevo negocio
           IconButton(
             icon: Icon(Icons.add_business),
             tooltip: 'Añadir Nuevo Negocio',
-            onPressed: _navigateToCreateBusiness,
-          ),
-          IconButton(
-            icon: Icon(Icons.calendar_today),
-            tooltip: 'Reservas',
             onPressed: () {
-              Navigator.pushNamed(context, '/my_reservations');
+              Navigator.pushNamed(context, '/create_business');
             },
           ),
         ],
@@ -124,7 +129,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                           ),
                           elevation: 4,
                           child: ListTile(
-                            contentPadding: EdgeInsets.all(16),
+                            contentPadding: EdgeInsets .all(16),
                             title: Text(
                               business['name'],
                               style: TextStyle(
@@ -137,6 +142,13 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                             onTap: () => _navigateToBusinessDetails(business['id']),
+                            trailing: IconButton(
+                              icon: Icon(Icons.calendar_today),
+                              tooltip: 'Reservas',
+                              onPressed: () {
+                                _navigateToBusinessReservations(business['id']);
+                              },
+                            ),
                           ),
                         );
                       },
