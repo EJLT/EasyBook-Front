@@ -7,11 +7,13 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController passwordController = TextEditingController();
   final ApiService apiService = ApiService();
 
+  LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.blueAccent, Colors.lightBlueAccent],
             begin: Alignment.topLeft,
@@ -25,13 +27,13 @@ class LoginScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               elevation: 8,
-              margin: EdgeInsets.symmetric(horizontal: 20), // Margen horizontal para centrar
+              margin: const EdgeInsets.symmetric(horizontal: 20), // Margen horizontal para centrar
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    const Text(
                       'Welcome to EasyBook',
                       style: TextStyle(
                         fontSize: 24,
@@ -39,7 +41,7 @@ class LoginScreen extends StatelessWidget {
                         color: Colors.blueAccent,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
@@ -47,10 +49,10 @@ class LoginScreen extends StatelessWidget {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        prefixIcon: Icon(Icons.email),
+                        prefixIcon: const Icon(Icons.email),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: passwordController,
                       decoration: InputDecoration(
@@ -58,11 +60,11 @@ class LoginScreen extends StatelessWidget {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
                       ),
                       obscureText: true,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () async {
                         try {
@@ -91,19 +93,19 @@ class LoginScreen extends StatelessWidget {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
+                      child: const Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/register');
                       },
-                      child: Text('¿No tienes cuenta? Regístrate'),
+                      child: const Text('¿No tienes cuenta? Regístrate'),
                     ),
                   ],
                 ),

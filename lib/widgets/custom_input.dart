@@ -4,7 +4,7 @@ class CustomInput extends StatelessWidget {
   final String label;
   final bool isPassword;
 
-  const CustomInput({
+  const CustomInput({super.key, 
     required this.label,
     this.isPassword = false,
   });
@@ -15,7 +15,7 @@ class CustomInput extends StatelessWidget {
       obscureText: isPassword,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
     );
   }

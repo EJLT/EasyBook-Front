@@ -26,7 +26,7 @@ class AuthStorage {
     return prefs.getString('ownerId');
   }
 
-  // Eliminar el token y el ownerId (por ejemplo, cuando el usuario cierre sesión)
+  // Eliminar el token y el ownerId (cuando el usuario cierre sesión)
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');

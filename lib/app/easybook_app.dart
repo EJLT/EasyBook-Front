@@ -4,9 +4,12 @@ import '../../screens/auth/login_screen.dart';
 import '../screens/Businessman/owner_home_screen.dart';
 import '../screens/Businessman/owner_add_screen.dart'; 
 import '../screens/Businessman/owner_reserve_screen.dart';
+import '../screens/users/user_home_screen.dart'; // Importa la pantalla de usuario
 
 class EasyBookApp extends StatelessWidget {
- @override
+  const EasyBookApp({super.key});
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'EasyBook',
@@ -17,9 +20,10 @@ class EasyBookApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginScreen(),
         '/create_business': (context) => CreateBusinessScreen(),
+        '/owner_home': (context) => OwnerHomeScreen(), 
+        '/user_home': (context) => UserHomeScreen(), 
       },
       onGenerateRoute: (settings) {
-        // Verifica la ruta y los parámetros que estás pasando
         if (settings.name == '/business_reservations') {
           final businessId = settings.arguments as int;
           return MaterialPageRoute(
@@ -32,7 +36,7 @@ class EasyBookApp extends StatelessWidget {
             future: checkUserRole(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Scaffold(
+                return const Scaffold(
                   body: Center(child: CircularProgressIndicator()),
                 );
               }
@@ -42,11 +46,11 @@ class EasyBookApp extends StatelessWidget {
                 if (role == 'owner') {
                   return OwnerHomeScreen();
                 } else if (role == 'user') {
-                  // return UserHomeScreen();
+                  return UserHomeScreen(); 
                 }
               }
 
-              return LoginScreen();
+              return LoginScreen(); 
             },
           ),
         );
@@ -61,9 +65,10 @@ class EasyBookApp extends StatelessWidget {
     final ownerId = prefs.getString('ownerId');
 
     if (token != null && ownerId != null) {
-      return {'role': 'owner'}; // Cambia según la lógica de tu API
+      return {'role': 'owner'}; 
     }
 
-    return {'role': 'guest'}; // Si no hay token o ownerId, asume que el usuario es un invitado
+    // Si el usuario no tiene un token de propietario, lo tratamos como 'user'
+    return {'role': 'user'}; 
   }
 }

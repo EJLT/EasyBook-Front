@@ -1,11 +1,13 @@
-import 'dart:convert'; // Para poder decodificar la respuesta JSON
+import 'dart:convert'; 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Businessman/owner_details_screen.dart';
-import '../Businessman/owner_reserve_screen.dart';  
+import '../Businessman/owner_reserve_screen.dart';
 
 class OwnerHomeScreen extends StatefulWidget {
+  const OwnerHomeScreen({super.key});
+
   @override
   _OwnerHomeScreenState createState() => _OwnerHomeScreenState();
 }
@@ -64,6 +66,11 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     }
   }
 
+  // Callback para actualizar la lista después de la actualización del negocio
+  void _updateBusinessList() {
+    _loadBusinessData();
+  }
+
   // Navegar a la pantalla de detalles de un negocio
   void _navigateToBusinessDetails(int businessId) {
     Navigator.push(
@@ -74,26 +81,15 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     );
   }
 
-  // Navegar a la pantalla de reservas del negocio
-  void _navigateToBusinessReservations(int businessId) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BusinessReservationsScreen(businessId: businessId),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Panel del Propietario', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Panel del Propietario', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.blueAccent,
         actions: [
-          // Botón para añadir un nuevo negocio
           IconButton(
-            icon: Icon(Icons.add_business),
+            icon: const Icon(Icons.add_business),
             tooltip: 'Añadir Nuevo Negocio',
             onPressed: () {
               Navigator.pushNamed(context, '/create_business');
@@ -106,7 +102,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Mis Negocios',
               style: TextStyle(
                 fontSize: 24,
@@ -114,25 +110,25 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                 color: Colors.blueAccent,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: _businesses.isEmpty
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
                       itemCount: _businesses.length,
                       itemBuilder: (context, index) {
                         final business = _businesses[index];
                         return Card(
-                          margin: EdgeInsets.symmetric(vertical: 8),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 4,
                           child: ListTile(
-                            contentPadding: EdgeInsets .all(16),
+                            contentPadding: const EdgeInsets.all(16),
                             title: Text(
                               business['name'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -142,13 +138,6 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                             onTap: () => _navigateToBusinessDetails(business['id']),
-                            trailing: IconButton(
-                              icon: Icon(Icons.calendar_today),
-                              tooltip: 'Reservas',
-                              onPressed: () {
-                                _navigateToBusinessReservations(business['id']);
-                              },
-                            ),
                           ),
                         );
                       },

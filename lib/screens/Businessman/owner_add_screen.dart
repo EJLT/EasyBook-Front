@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateBusinessScreen extends StatefulWidget {
+  const CreateBusinessScreen({super.key});
+
   @override
   _CreateBusinessScreenState createState() => _CreateBusinessScreenState();
 }
@@ -13,7 +15,7 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
 
   String _name = '';
   String _address = '';
-  String _description = '';
+  String _email = ''; // Cambié de description a email
   String _phone = '';
 
   bool _isLoading = false;
@@ -46,26 +48,26 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
         body: json.encode({
           'name': _name,
           'address': _address,
-          'description': _description,
+          'email': _email, 
           'phone': _phone,
         }),
       );
 
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Negocio creado con éxito')),
+          const SnackBar(content: Text('Negocio creado con éxito')),
         );
-        Navigator.pop(context, true); // Regresa a la pantalla anterior y refresca
+        Navigator.pop(context, true); 
       } else {
         print("Error: Código de estado ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear el negocio')),
+          const SnackBar(content: Text('Error al crear el negocio')),
         );
       }
     } catch (e) {
       print("Excepción al crear el negocio: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hubo un error. Inténtalo de nuevo.')),
+        const SnackBar(content: Text('Hubo un error. Inténtalo de nuevo.')),
       );
     } finally {
       setState(() {
@@ -78,11 +80,11 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Añadir Nuevo Negocio'),
+        title: const Text('Añadir Nuevo Negocio'),
         backgroundColor: Colors.blueAccent,
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
@@ -91,13 +93,13 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Introduce los datos del negocio',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFormField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Nombre del Negocio',
                           border: OutlineInputBorder(),
                         ),
@@ -105,9 +107,9 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                             value == null || value.isEmpty ? 'El nombre es obligatorio' : null,
                         onSaved: (value) => _name = value!,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFormField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Dirección',
                           border: OutlineInputBorder(),
                         ),
@@ -115,33 +117,37 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                             value == null || value.isEmpty ? 'La dirección es obligatoria' : null,
                         onSaved: (value) => _address = value!,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Correo electrónico',
+                        decoration: const InputDecoration(
+                          labelText: 'Correo electrónico',  
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 1,
-                        onSaved: (value) => _description = value!,
+                        validator: (value) =>
+                            value == null || value.isEmpty ? 'El correo electrónico es obligatorio' : null,
+                        onSaved: (value) => _email = value!, 
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFormField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Teléfono',
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.phone,
+                        validator: (value) =>
+                            value == null || value.isEmpty ? 'El teléfono es obligatorio' : null,
                         onSaved: (value) => _phone = value!,
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
                       Center(
                         child: ElevatedButton(
                           onPressed: _createBusiness,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent,
-                            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                           ),
-                          child: Text('Crear Negocio'),
+                          child: const Text('Crear Negocio'),
                         ),
                       ),
                     ],

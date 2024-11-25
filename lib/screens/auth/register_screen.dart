@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -24,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (password != passwordConfirmation) {
       // Mostrar mensaje de error si las contraseñas no coinciden
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Las contraseñas no coinciden."),
       ));
       return;
@@ -44,14 +46,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (response.statusCode == 200) {
       // Si la respuesta es exitosa, puedes navegar a otra pantalla o mostrar un mensaje
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Registro exitoso."),
       ));
       // Aquí podrías redirigir al usuario al login o al home
       Navigator.pushReplacementNamed(context, '/login');
     } else {
       // Si la respuesta no es exitosa, muestra un mensaje de error
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Error al registrar. Inténtalo de nuevo."),
       ));
     }
@@ -61,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Easybook'),
+        title: const Text('Easybook'),
         backgroundColor: Colors.blueAccent,
       ),
       body: Center(
@@ -69,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -78,86 +80,86 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.black.withOpacity(0.1),
                     spreadRadius: 5,
                     blurRadius: 7,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Crea una cuenta',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // Campo de nombre
                   TextField(
                     controller: _nameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Nombre',
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   // Campo de email
                   TextField(
                     controller: _emailController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   // Campo de password
                   TextField(
                     controller: _passwordController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Password',
                       border: OutlineInputBorder(),
                     ),
                     obscureText: true,
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   // Campo de password_confirmation
                   TextField(
                     controller: _passwordConfirmationController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Confirmar Password',
                       border: OutlineInputBorder(),
                     ),
                     obscureText: true,
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   // Campo de role
                   TextField(
                     controller: _roleController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Rol (user/owner/admin)',
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // Botón de registro
                   ElevatedButton(
                     onPressed: _register,
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       backgroundColor: Colors.blueAccent,
                     ),
-                    child: Text('Confirmar', style: TextStyle(fontSize: 16)),
+                    child: const Text('Confirmar', style: TextStyle(fontSize: 16)),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/login');
                     },
-                    child: Text('¿Ya tienes cuenta? Inicia sesión'),
+                    child: const Text('¿Ya tienes cuenta? Inicia sesión'),
                   ),
                 ],
               ),
