@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'user_reserve_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'create_reserve_screen.dart'; 
+import 'user_reserve_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
   @override
@@ -57,7 +58,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserReserveScreen()),
+                MaterialPageRoute(
+                  builder: (context) => UserReserveScreen(),
+                ),
               );
             },
           ),
@@ -70,7 +73,15 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             title: Text(businesses[index]['name']),
             subtitle: Text(businesses[index]['address']),
             onTap: () {
-              // Navegar a detalles del negocio (opcional)
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateReserveScreen(
+                    businessId: businesses[index]['id'], 
+                    businessName: businesses[index]['name'], 
+                  ),
+                ),
+              );
             },
           );
         },

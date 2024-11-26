@@ -60,24 +60,81 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
 }
 
 
+// Función para confirmar reserva
+  Future<void> _confirmReservation(int reservationId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null || token.isEmpty) {
+      print("Token no encontrado");
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8000/api/business-owner/reservations/$reservationId/confirm'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        _loadReservations(); // Recargar las reservas después de confirmar
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Reserva confirmada.")),
+        );
+      } else {
+        print("Error al confirmar reserva: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Excepción al confirmar reserva: $e");
+    }
+  }
+
+  // Función para cancelar reserva
+  Future<void> _cancelReservation(int reservationId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null || token.isEmpty) {
+      print("Token no encontrado");
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8000/api/business-owner/reservations/$reservationId/cancel'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        _loadReservations(); // Recargar las reservas después de cancelar
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Reserva cancelada.")),
+        );
+      } else {
+        print("Error al cancelar reserva: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Excepción al cancelar reserva: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.businessId != null
-            ? 'Reservas del Negocio'
-            : 'Todas las Reservas'),
+        title: Text(widget.businessId != null ? 'Reservas del Negocio' : 'Todas las Reservas'),
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _reservations.isEmpty
-            ? const Center(
-                child: Text(
-                  'No hay reservas aún.',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-              )
+            ? const Center(child: Text('No hay reservas aún.'))
             : ListView.builder(
                 itemCount: _reservations.length,
                 itemBuilder: (context, index) {
@@ -92,14 +149,24 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
                       contentPadding: const EdgeInsets.all(16),
                       title: Text(
                         'Reserva #${reservation['id']}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
                         'Fecha: ${reservation['date']} - Hora: ${reservation['time']}',
                         style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.check, color: Colors.green),
+                            onPressed: () => _confirmReservation(reservation['id']),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            onPressed: () => _cancelReservation(reservation['id']),
+                          ),
+                        ],
                       ),
                     ),
                   );

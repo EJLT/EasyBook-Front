@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../Businessman/owner_update_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'owner_reserve_screen.dart';
 class BusinessDetailsScreen extends StatefulWidget {
   final int businessId;
 
@@ -216,14 +216,23 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen> {
                         ],
                       ),
 
-                      Center(
+                       Center(
                         child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BusinessReservationsScreen(
+                                  businessId: widget.businessId,
+                                ),
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
+                            backgroundColor: Colors.green,
                             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                           ),
-                          child: const Text('Volver'),
+                          child: const Text('Ver Reservas'),
                         ),
                       ),
                     ],
