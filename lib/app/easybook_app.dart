@@ -4,7 +4,8 @@ import '../../screens/auth/login_screen.dart';
 import '../screens/Businessman/owner_home_screen.dart';
 import '../screens/Businessman/owner_add_screen.dart'; 
 import '../screens/Businessman/owner_reserve_screen.dart';
-import '../screens/users/user_home_screen.dart'; // Importa la pantalla de usuario
+import '../screens/auth/register_screen.dart';
+import '../screens/users/user_home_screen.dart'; 
 
 class EasyBookApp extends StatelessWidget {
   const EasyBookApp({super.key});
@@ -22,6 +23,7 @@ class EasyBookApp extends StatelessWidget {
         '/create_business': (context) => CreateBusinessScreen(),
         '/owner_home': (context) => OwnerHomeScreen(), 
         '/user_home': (context) => UserHomeScreen(), 
+        '/register': (context) => RegisterScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/business_reservations') {

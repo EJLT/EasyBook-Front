@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,47 +20,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _roleController = TextEditingController(); 
 
   // Método para hacer el registro
-  Future<void> _register() async {
-    final String name = _nameController.text;
-    final String email = _emailController.text;
-    final String password = _passwordController.text;
-    final String passwordConfirmation = _passwordConfirmationController.text;
-    final String role = _roleController.text;
+ Future<void> _register() async {
+  final String name = _nameController.text;
+  final String email = _emailController.text;
+  final String password = _passwordController.text;
+  final String passwordConfirmation = _passwordConfirmationController.text;
+  final String role = _roleController.text;
 
-    if (password != passwordConfirmation) {
-      // Mostrar mensaje de error si las contraseñas no coinciden
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Las contraseñas no coinciden."),
-      ));
-      return;
-    }
-
-    // Realizar la solicitud de registro a la API
-    final response = await http.post(
-      Uri.parse('http://localhost:8000/api/register'),
-      body: {
-        'name': name,
-        'email': email,
-        'password': password,
-        'password_confirmation': passwordConfirmation,
-        'role': role, 
-      },
+  if (password != passwordConfirmation) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Las contraseñas no coinciden.")),
     );
-
-    if (response.statusCode == 200) {
-      // Si la respuesta es exitosa, puedes navegar a otra pantalla o mostrar un mensaje
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Registro exitoso."),
-      ));
-      // Aquí podrías redirigir al usuario al login o al home
-      Navigator.pushReplacementNamed(context, '/login');
-    } else {
-      // Si la respuesta no es exitosa, muestra un mensaje de error
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Error al registrar. Inténtalo de nuevo."),
-      ));
-    }
+    return;
   }
+
+  final response = await http.post(
+    Uri.parse('http://localhost:8000/api/register'),
+    body: {
+      'name': name,
+      'email': email,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+      'role': role,
+    },
+  );
+
+if (response.statusCode == 200) {
+  final jsonResponse = jsonDecode(response.body);
+  final token = jsonResponse['token'];
+  
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('token', token);
+
+  Navigator.pushReplacementNamed(context, '/login');
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Error al registrar. Inténtalo de nuevo.")),
+    );
+  }
+}
 
 @override
   Widget build(BuildContext context) {
