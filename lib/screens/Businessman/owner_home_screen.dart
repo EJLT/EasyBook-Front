@@ -1,9 +1,8 @@
-import 'dart:convert'; 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Businessman/owner_details_screen.dart';
-import '../Businessman/owner_reserve_screen.dart';
 
 class OwnerHomeScreen extends StatefulWidget {
   const OwnerHomeScreen({super.key});
@@ -85,14 +84,15 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Panel del Propietario', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Panel del Propietario',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.blueAccent,
         actions: [
           IconButton(
             icon: const Icon(Icons.add_business),
             tooltip: 'Añadir Nuevo Negocio',
             onPressed: () {
-              Navigator.pushNamed(context, '/create_business');
+              Navigator.pushNamed(context, '/owner_add');
             },
           ),
         ],
@@ -137,7 +137,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                               business['address'],
                               style: TextStyle(color: Colors.grey[600]),
                             ),
-                            onTap: () => _navigateToBusinessDetails(business['id']),
+                            onTap: () =>
+                                _navigateToBusinessDetails(business['id']),
                           ),
                         );
                       },

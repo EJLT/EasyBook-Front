@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app/easybook_app.dart'; 
+import 'app/easybook_app.dart';
 
 void main() {
-  runApp(EasyBookApp());
+  runApp(const EasyBookApp());
 }

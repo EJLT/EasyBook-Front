@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class CreateReserveScreen extends StatefulWidget {
   final int businessId;
-  final String businessName;  
+  final String businessName;
 
-  const CreateReserveScreen({Key? key, required this.businessId, required this.businessName}) : super(key: key);
+  const CreateReserveScreen(
+      {super.key, required this.businessId, required this.businessName});
 
   @override
   _CreateReserveScreenState createState() => _CreateReserveScreenState();
@@ -23,8 +24,12 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
   @override
   void initState() {
     super.initState();
-    _formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate); // Formateo de la fecha
-    _formattedTime = _selectedTime.format(context); // Formateo de la hora
+    _formattedDate =
+        DateFormat('yyyy-MM-dd').format(_selectedDate); // Formateo de la fecha
+
+    // Formateo de la hora sin segundos
+    _formattedTime =
+        '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}';
   }
 
   Future<void> _createReservation() async {
@@ -42,7 +47,7 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
       print("Token: $token");
 
       final response = await http.post(
-        Uri.parse('http://192.168.x.x:8000/api/user/reservations'), // Usa la IP local si estás en un dispositivo físico
+        Uri.parse('http://localhost:8000/api/user/reservations'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -50,7 +55,7 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
         body: json.encode({
           'business_id': widget.businessId.toString(),
           'date': _formattedDate,
-          'time': _formattedTime,
+          'time': _formattedTime, // La hora ahora no tiene segundos
         }),
       );
 
@@ -58,22 +63,22 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
       print("Respuesta: ${response.statusCode}");
       print("Cuerpo de la respuesta: ${response.body}");
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print("Reserva creada con éxito");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Reserva creada con éxito")),
+          const SnackBar(content: Text("Reserva creada con éxito")),
         );
         Navigator.pop(context);
       } else {
         print("Error al crear la reserva: ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error al crear la reserva")),
+          const SnackBar(content: Text("Error al crear la reserva")),
         );
       }
     } catch (e) {
       print("Error al crear la reserva: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al crear la reserva")),
+        const SnackBar(content: Text("Error al crear la reserva")),
       );
     }
   }
@@ -85,11 +90,13 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
       firstDate: DateTime(2024),
       lastDate: DateTime(2100),
     );
-    if (picked != null && picked != _selectedDate)
+    if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
-        _formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate); // Actualizar fecha formateada
+        _formattedDate = DateFormat('yyyy-MM-dd')
+            .format(_selectedDate); // Actualizar fecha formateada
       });
+    }
   }
 
   Future<void> _selectTime() async {
@@ -97,18 +104,21 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
       context: context,
       initialTime: _selectedTime,
     );
-    if (picked != null && picked != _selectedTime)
+    if (picked != null && picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
-        _formattedTime = _selectedTime.format(context); // Actualizar hora formateada
+        _formattedTime =
+            '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}'; // Actualizar hora formateada
       });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Crear Reserva en ${widget.businessName}"), // Mostrar el nombre del negocio
+        title: Text(
+            "Crear Reserva en ${widget.businessName}"), // Mostrar el nombre del negocio
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -117,19 +127,19 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
           children: [
             Text(
               "Negocio: ${widget.businessName}",
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _selectDate,
               child: Text("Seleccionar Fecha: $_formattedDate"),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _selectTime,
               child: Text("Seleccionar Hora: $_formattedTime"),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _createReservation,
               child: const Text("Crear Reserva"),

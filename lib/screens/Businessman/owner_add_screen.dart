@@ -15,7 +15,7 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
 
   String _name = '';
   String _address = '';
-  String _email = ''; // Cambié de description a email
+  String _email = '';
   String _phone = '';
 
   bool _isLoading = false;
@@ -48,7 +48,7 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
         body: json.encode({
           'name': _name,
           'address': _address,
-          'email': _email, 
+          'email': _email,
           'phone': _phone,
         }),
       );
@@ -57,7 +57,7 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Negocio creado con éxito')),
         );
-        Navigator.pop(context, true); 
+        Navigator.pop(context, true);
       } else {
         print("Error: Código de estado ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +95,8 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                     children: [
                       const Text(
                         'Introduce los datos del negocio',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -103,8 +104,9 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                           labelText: 'Nombre del Negocio',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'El nombre es obligatorio' : null,
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'El nombre es obligatorio'
+                            : null,
                         onSaved: (value) => _name = value!,
                       ),
                       const SizedBox(height: 16),
@@ -113,20 +115,22 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                           labelText: 'Dirección',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'La dirección es obligatoria' : null,
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'La dirección es obligatoria'
+                            : null,
                         onSaved: (value) => _address = value!,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         decoration: const InputDecoration(
-                          labelText: 'Correo electrónico',  
+                          labelText: 'Correo electrónico',
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 1,
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'El correo electrónico es obligatorio' : null,
-                        onSaved: (value) => _email = value!, 
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'El correo electrónico es obligatorio'
+                            : null,
+                        onSaved: (value) => _email = value!,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -135,8 +139,9 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.phone,
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'El teléfono es obligatorio' : null,
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'El teléfono es obligatorio'
+                            : null,
                         onSaved: (value) => _phone = value!,
                       ),
                       const SizedBox(height: 24),
@@ -145,7 +150,8 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                           onPressed: _createBusiness,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent,
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 15),
                           ),
                           child: const Text('Crear Negocio'),
                         ),

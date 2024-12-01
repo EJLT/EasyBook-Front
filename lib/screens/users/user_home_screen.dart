@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'create_reserve_screen.dart'; 
+import 'create_reserve_screen.dart';
 import 'user_reserve_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
+  const UserHomeScreen({super.key});
+
   @override
   _UserHomeScreenState createState() => _UserHomeScreenState();
 }
@@ -51,15 +53,15 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todos los Negocios'),
+        title: const Text('Todos los Negocios'),
         actions: [
           IconButton(
-            icon: Icon(Icons.bookmark),
+            icon: const Icon(Icons.bookmark),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserReserveScreen(),
+                  builder: (context) => const UserReserveScreen(),
                 ),
               );
             },
@@ -77,8 +79,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => CreateReserveScreen(
-                    businessId: businesses[index]['id'], 
-                    businessName: businesses[index]['name'], 
+                    businessId: businesses[index]['id'],
+                    businessName: businesses[index]['name'],
                   ),
                 ),
               );

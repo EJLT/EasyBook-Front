@@ -48,7 +48,8 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
 
     try {
       final response = await http.put(
-        Uri.parse('http://localhost:8000/api/user/reservations/${widget.reservationId}'),
+        Uri.parse(
+            'http://localhost:8000/api/user/reservations/${widget.reservationId}'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -61,20 +62,20 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
         print("Reserva actualizada: $updatedReservation");
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Reserva actualizada correctamente')),
+          const SnackBar(content: Text('Reserva actualizada correctamente')),
         );
-        
+
         Navigator.pop(context); // Volver a la pantalla anterior
       } else {
         print("Error al actualizar la reserva: ${response.statusCode}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al actualizar la reserva')),
+          const SnackBar(content: Text('Error al actualizar la reserva')),
         );
       }
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error de conexión')),
+        const SnackBar(content: Text('Error de conexión')),
       );
     }
   }
@@ -88,15 +89,16 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Actualizar la reserva #${widget.reservationId}", style: const TextStyle(fontSize: 20)),
-            SizedBox(height: 20),
+            Text("Actualizar la reserva #${widget.reservationId}",
+                style: const TextStyle(fontSize: 20)),
+            const SizedBox(height: 20),
             TextField(
               controller: _dateController,
               decoration: InputDecoration(
                 labelText: "Fecha",
                 hintText: "Selecciona una fecha",
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
+                  icon: const Icon(Icons.calendar_today),
                   onPressed: () async {
                     // Mostrar un DatePicker para seleccionar la fecha
                     final pickedDate = await showDatePicker(
@@ -107,26 +109,28 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                     );
                     if (pickedDate != null) {
                       setState(() {
-                        _dateController.text = pickedDate.toLocal().toString().split(' ')[0];
+                        _dateController.text =
+                            pickedDate.toLocal().toString().split(' ')[0];
                       });
                     }
                   },
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _timeController,
               decoration: InputDecoration(
                 labelText: "Hora",
                 hintText: "Selecciona una hora",
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.access_time),
+                  icon: const Icon(Icons.access_time),
                   onPressed: () async {
                     // Mostrar un TimePicker para seleccionar la hora
                     final pickedTime = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(DateTime.parse("2000-01-01 ${_timeController.text}:00")),
+                      initialTime: TimeOfDay.fromDateTime(DateTime.parse(
+                          "2000-01-01 ${_timeController.text}:00")),
                     );
                     if (pickedTime != null) {
                       setState(() {
@@ -137,7 +141,7 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _updateReservation,
               child: const Text("Actualizar Reserva"),

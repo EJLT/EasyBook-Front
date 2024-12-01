@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               elevation: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 20), // Margen horizontal para centrar
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -76,29 +76,36 @@ class LoginScreen extends StatelessWidget {
                           final role = response['role'];
                           final token = response['token'];
 
-                          // Guardamos el token en SharedPreferences
+                          // Guardar token y rol en SharedPreferences
                           final prefs = await SharedPreferences.getInstance();
                           await prefs.setString('token', token);
+                          await prefs.setString('role', role);
 
-                          // Redirige dependiendo del rol
+                          // Navega según el rol
                           if (role == 'owner') {
-                            Navigator.pushReplacementNamed(context, '/owner_home');
+                            Navigator.pushReplacementNamed(
+                                context, '/owner_home');
                           } else if (role == 'user') {
-                            Navigator.pushReplacementNamed(context, '/user_home');
+                            Navigator.pushReplacementNamed(
+                                context, '/user_home');
                           }
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error de inicio de sesión: ${e.toString()}')),
+                            SnackBar(
+                                content: Text(
+                                    'Error de inicio de sesión: ${e.toString()}')),
                           );
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
+                      child: const Text('Iniciar Sesión',
+                          style: TextStyle(fontSize: 18)),
                     ),
                     const SizedBox(height: 10),
                     TextButton(
