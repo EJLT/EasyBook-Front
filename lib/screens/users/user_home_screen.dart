@@ -59,7 +59,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todos los Negocios'),
+        title: const Text('Negocios disponibles'),
         actions: [
           IconButton(
             icon: const Icon(Icons.bookmark),

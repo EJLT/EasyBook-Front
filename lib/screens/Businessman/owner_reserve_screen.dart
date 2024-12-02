@@ -14,53 +14,85 @@ class BusinessReservationsScreen extends StatefulWidget {
 
 class _BusinessReservationsScreenState extends State<BusinessReservationsScreen> {
   List<dynamic> _reservations = [];
+  Map<String, int> _stats = {}; // Para almacenar las estadísticas
 
   @override
   void initState() {
     super.initState();
     _loadReservations();
+    _loadStatistics(); // Cargar estadísticas también
   }
 
- Future<void> _loadReservations() async {
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
+  Future<void> _loadReservations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-  if (token == null || token.isEmpty) {
-    print("Token no encontrado");
-    Navigator.pushReplacementNamed(context, '/login');
-    return;
-  }
+    if (token == null || token.isEmpty) {
+      print("Token no encontrado");
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
 
-  try {
-    
-    final url = widget.businessId != null
-        ? 'http://localhost:8000/api/owner/businesses/${widget.businessId}/reservations'
-        : 'http://localhost:8000/api/owner/all-reservations';
+    try {
+      final url = widget.businessId != null
+          ? 'http://localhost:8000/api/owner/businesses/${widget.businessId}/reservations'
+          : 'http://localhost:8000/api/owner/all-reservations';
 
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      List<dynamic> reservations = json.decode(response.body);
-      setState(() {
-        _reservations = reservations;
-      });
-    } else {
-      print("Error: Código de estado ${response.statusCode}");
+      if (response.statusCode == 200) {
+        List<dynamic> reservations = json.decode(response.body);
+        setState(() {
+          _reservations = reservations;
+        });
+      } else {
+        print("Error: Código de estado ${response.statusCode}");
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    } catch (e) {
+      print("Excepción al cargar las reservas: $e");
       Navigator.pushReplacementNamed(context, '/login');
     }
-  } catch (e) {
-    print("Excepción al cargar las reservas: $e");
-    Navigator.pushReplacementNamed(context, '/login');
   }
-}
 
+  // Función para cargar estadísticas
+  Future<void> _loadStatistics() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-// Función para confirmar reserva
+    if (token == null || token.isEmpty) {
+      print("Token no encontrado");
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/owner/reservations/stats/${widget.businessId}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> stats = json.decode(response.body);
+        setState(() {
+          _stats = stats.map((key, value) => MapEntry(key, value.toInt())); // Convertir todos los valores a enteros
+        });
+      } else {
+        print("Error al cargar estadísticas: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Excepción al cargar estadísticas: $e");
+    }
+  }
+
+  // Función para confirmar reserva
   Future<void> _confirmReservation(int reservationId) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -125,87 +157,118 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(widget.businessId != null ? 'Reservas del Negocio' : 'Todas las Reservas'),
-      backgroundColor: Colors.blueAccent,
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: _reservations.isEmpty
-          ? const Center(child: Text('No hay reservas aún.'))
-          : ListView.builder(
-              itemCount: _reservations.length,
-              itemBuilder: (context, index) {
-                final reservation = _reservations[index];
-                final status = reservation['status']; // Estado de la reserva
-
-                // Determina el color del estado según su valor
-                Color statusColor;
-                switch (status) {
-                  case 'confirmada':
-                    statusColor = Colors.green;
-                    break;
-                  case 'cancelada':
-                    statusColor = Colors.red;
-                    break;
-                  default:
-                    statusColor = Colors.orange; // Por defecto "nueva"
-                }
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 4,
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    title: Text(
-                      'Reserva #${reservation['id']}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Fecha: ${reservation['date']} - Hora: ${reservation['time']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Text('Estado: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(
-                              status.toUpperCase(),
-                              style: TextStyle(
-                                color: statusColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    trailing: Row(
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.businessId != null ? 'Reservas del Negocio' : 'Todas las Reservas'),
+        backgroundColor: Colors.blueAccent,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bar_chart),
+            onPressed: () {
+              // Mostrar las estadísticas de este negocio
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("Estadísticas del Negocio"),
+                    content: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.check, color: Colors.green),
-                          onPressed: () => _confirmReservation(reservation['id']),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.cancel, color: Colors.red),
-                          onPressed: () => _cancelReservation(reservation['id']),
-                        ),
-                      ],
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _stats.entries.map((entry) {
+                        return Text('${entry.key}: ${entry.value}');
+                      }).toList(),
                     ),
-                  ),
-                );
-              },
-            ),
-       ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cerrar'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _reservations.isEmpty
+            ? const Center(child: Text('No hay reservas aún.'))
+            : ListView.builder(
+                itemCount: _reservations.length,
+                itemBuilder: (context, index) {
+                  final reservation = _reservations[index];
+                  final status = reservation['status']; // Estado de la reserva
+
+                  // Determina el color del estado según su valor
+                  Color statusColor;
+                  switch (status) {
+                    case 'confirmada':
+                      statusColor = Colors.green;
+                      break;
+                    case 'cancelada':
+                      statusColor = Colors.red;
+                      break;
+                    default:
+                      statusColor = Colors.orange; // Por defecto "nueva"
+                  }
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(
+                        'Reserva #${reservation['id']}',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Fecha: ${reservation['date']} - Hora: ${reservation['time']}',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Text('Estado: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(
+                                status.toUpperCase(),
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.check, color: Colors.green),
+                            onPressed: () => _confirmReservation(reservation['id']),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            onPressed: () => _cancelReservation(reservation['id']),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+      ),
     );
   }
 }
