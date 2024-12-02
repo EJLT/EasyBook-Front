@@ -65,19 +65,10 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     }
   }
 
-  // Callback para actualizar la lista después de la actualización del negocio
-  void _updateBusinessList() {
-    _loadBusinessData();
-  }
-
-  // Navegar a la pantalla de detalles de un negocio
-  void _navigateToBusinessDetails(int businessId) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BusinessDetailsScreen(businessId: businessId),
-      ),
-    );
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Borra todos los datos almacenados
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override
@@ -94,6 +85,11 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
             onPressed: () {
               Navigator.pushNamed(context, '/owner_add');
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar Sesión',
+            onPressed: _logout,
           ),
         ],
       ),
@@ -137,8 +133,13 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                               business['address'],
                               style: TextStyle(color: Colors.grey[600]),
                             ),
-                            onTap: () =>
-                                _navigateToBusinessDetails(business['id']),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BusinessDetailsScreen(businessId: business['id']),
+                              ),
+                            ),
                           ),
                         );
                       },

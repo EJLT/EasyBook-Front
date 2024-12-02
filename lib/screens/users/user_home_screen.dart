@@ -49,6 +49,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     }
   }
 
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Borra todos los datos almacenados
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,6 +71,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                 ),
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar Sesión',
+            onPressed: _logout,
           ),
         ],
       ),
