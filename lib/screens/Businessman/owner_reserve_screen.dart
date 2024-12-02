@@ -73,14 +73,14 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/api/business-owner/reservations/$reservationId/confirm'),
+        Uri.parse('http://localhost:8000/api/owner/reservations/$reservationId/confirm'),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        _loadReservations(); // Recargar las reservas después de confirmar
+        _loadReservations();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Reserva confirmada.")),
         );
@@ -105,7 +105,7 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/api/business-owner/reservations/$reservationId/cancel'),
+        Uri.parse('http://localhost:8000/api/owner/reservations/$reservationId/cancel'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -125,54 +125,87 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.businessId != null ? 'Reservas del Negocio' : 'Todas las Reservas'),
-        backgroundColor: Colors.blueAccent,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _reservations.isEmpty
-            ? const Center(child: Text('No hay reservas aún.'))
-            : ListView.builder(
-                itemCount: _reservations.length,
-                itemBuilder: (context, index) {
-                  final reservation = _reservations[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(widget.businessId != null ? 'Reservas del Negocio' : 'Todas las Reservas'),
+      backgroundColor: Colors.blueAccent,
+    ),
+    body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: _reservations.isEmpty
+          ? const Center(child: Text('No hay reservas aún.'))
+          : ListView.builder(
+              itemCount: _reservations.length,
+              itemBuilder: (context, index) {
+                final reservation = _reservations[index];
+                final status = reservation['status']; // Estado de la reserva
+
+                // Determina el color del estado según su valor
+                Color statusColor;
+                switch (status) {
+                  case 'confirmada':
+                    statusColor = Colors.green;
+                    break;
+                  case 'cancelada':
+                    statusColor = Colors.red;
+                    break;
+                  default:
+                    statusColor = Colors.orange; // Por defecto "nueva"
+                }
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16),
+                    title: Text(
+                      'Reserva #${reservation['id']}',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    elevation: 4,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      title: Text(
-                        'Reserva #${reservation['id']}',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        'Fecha: ${reservation['date']} - Hora: ${reservation['time']}',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.check, color: Colors.green),
-                            onPressed: () => _confirmReservation(reservation['id']),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.cancel, color: Colors.red),
-                            onPressed: () => _cancelReservation(reservation['id']),
-                          ),
-                        ],
-                      ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Fecha: ${reservation['date']} - Hora: ${reservation['time']}',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Text('Estado: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              status.toUpperCase(),
+                              style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-      ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.check, color: Colors.green),
+                          onPressed: () => _confirmReservation(reservation['id']),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.cancel, color: Colors.red),
+                          onPressed: () => _cancelReservation(reservation['id']),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+       ),
     );
   }
 }
