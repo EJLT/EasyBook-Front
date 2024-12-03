@@ -47,6 +47,7 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
 
       if (response.statusCode == 200) {
         List<dynamic> reservations = json.decode(response.body);
+        print(reservations);  
         setState(() {
           _reservations = reservations;
         });
@@ -218,35 +219,35 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
                   }
 
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 4,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      title: Text(
-                        'Reserva #${reservation['id']}',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Fecha: ${reservation['date']} - Hora: ${reservation['time']}',
-                            style: TextStyle(color: Colors.grey[600]),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              const Text('Estado: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(
-                                status.toUpperCase(),
-                                style: TextStyle(
-                                  color: statusColor,
-                                  fontWeight: FontWeight.bold,
+                          elevation: 4,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(16),
+                            title: Text(
+                                 'Reserva de ${reservation['user_name'] ?? 'Desconocido'}', 
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Fecha: ${reservation['date']} - Hora: ${reservation['time']}',
+                                  style: TextStyle(color: Colors.grey[600]),
                                 ),
-                              ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    const Text('Estado: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                 Text(
+                                    status.toUpperCase(),
+                                    style: TextStyle(
+                                      color: statusColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                             ],
                           ),
                         ],
