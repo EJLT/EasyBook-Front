@@ -5,7 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Businessman/owner_details_screen.dart';
 
 class OwnerHomeScreen extends StatefulWidget {
-  const OwnerHomeScreen({super.key});
+  final Function(ThemeMode)? onThemeChanged;
+  final ThemeMode? currentThemeMode;
+
+  const OwnerHomeScreen({
+    Key? key,
+    this.onThemeChanged,
+    this.currentThemeMode,
+  }) : super(key: key);
 
   @override
   _OwnerHomeScreenState createState() => _OwnerHomeScreenState();
@@ -71,26 +78,38 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Panel del Propietario',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blueAccent,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_business),
-            tooltip: 'Añadir Nuevo Negocio',
-            onPressed: () {
-              Navigator.pushNamed(context, '/owner_add');
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Cerrar Sesión',
-            onPressed: _logout,
-          ),
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Panel del Propietario',
+          style: TextStyle(fontWeight: FontWeight.bold)),
+      backgroundColor: Colors.blueAccent,
+      actions: [
+                  PopupMenuButton<ThemeMode>(
+              onSelected: (themeMode) {
+                if (widget.onThemeChanged != null) {
+                  widget.onThemeChanged!(themeMode);
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: ThemeMode.light,
+                  child: const Text('Tema Claro'),
+                ),
+                PopupMenuItem(
+                  value: ThemeMode.dark,
+                  child: const Text('Tema Oscuro'),
+                ),
+              ],
+              icon: const Icon(Icons.palette),
+              tooltip: 'Cambiar Tema',
+            ),
+        IconButton(
+          icon: const Icon(Icons.logout),
+          tooltip: 'Cerrar Sesión',
+          onPressed: _logout,
+        ),
           
         ],
       ),
