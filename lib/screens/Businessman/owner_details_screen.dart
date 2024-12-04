@@ -197,6 +197,7 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen> {
                                     currentAddress: businessDetails!['address'],
                                     currentPhone: businessDetails!['phone'],
                                     currentEmail: businessDetails!['email'],
+                                    currentCategory: businessDetails!['category'],
                                     updateBusinessList: updateBusinessList,
                                   ),
                                 ),

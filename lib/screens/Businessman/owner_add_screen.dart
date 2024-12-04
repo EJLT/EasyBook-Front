@@ -17,9 +17,35 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
   String _address = '';
   String _email = '';
   String _phone = '';
+  String? _selectedCategory;
 
   bool _isLoading = false;
+  List<dynamic> categories = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  // Cargar categorías
+  Future<void> _loadCategories() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/categories'), // Endpoint para obtener categorías
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          categories = json.decode(response.body);
+        });
+      }
+    } catch (e) {
+      print("Error al cargar categorías: $e");
+    }
+  }
+
+  // Crear el negocio
   Future<void> _createBusiness() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -50,6 +76,7 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
           'address': _address,
           'email': _email,
           'phone': _phone,
+          'category_name': _selectedCategory, 
         }),
       );
 
@@ -144,6 +171,25 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                             : null,
                         onSaved: (value) => _phone = value!,
                       ),
+                      const SizedBox(height: 24),
+                      // Dropdown para seleccionar categoría
+                      categories.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : DropdownButtonFormField<String>(
+                              value: _selectedCategory,
+                              hint: const Text('Selecciona una categoría'),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedCategory = value;
+                                });
+                              },
+                              items: categories.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value: category['name'].toString(),
+                                  child: Text(category['name']),
+                                );
+                              }).toList(),
+                            ),
                       const SizedBox(height: 24),
                       Center(
                         child: ElevatedButton(

@@ -134,7 +134,8 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                     );
                     if (pickedTime != null) {
                       setState(() {
-                        _timeController.text = pickedTime.format(context);
+                        _timeController.text =
+                            "${pickedTime.hour.toString().padLeft(2, '0')}:${pickedTime.minute.toString().padLeft(2, '0')}";
                       });
                     }
                   },
