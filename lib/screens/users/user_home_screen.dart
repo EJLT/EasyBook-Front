@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'create_reserve_screen.dart';
 import 'user_reserve_screen.dart';
+import 'dart:ui';
 
 class UserHomeScreen extends StatefulWidget {
   final Function(ThemeMode) onThemeChanged;
@@ -24,7 +25,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   List<dynamic> filteredBusinesses = [];
   List<dynamic> categories = [];
   final TextEditingController _searchController = TextEditingController();
-  String? selectedCategory;
+  String? selectedCategory = 'Todos';
 
   @override
   void initState() {
@@ -41,12 +42,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     super.dispose();
   }
 
-  // Cargar los negocios
   Future<void> _loadBusinesses() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
-
       if (token == null || token.isEmpty) {
         Navigator.pushReplacementNamed(context, '/login');
         return;
@@ -60,7 +59,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       if (response.statusCode == 200) {
         setState(() {
           businesses = json.decode(response.body);
-          filteredBusinesses = businesses; // Iniciar con todos los negocios
+          filteredBusinesses = businesses;
         });
       }
     } catch (e) {
@@ -68,11 +67,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     }
   }
 
-  // Cargar las categorías
   Future<void> _loadCategories() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/categories'), // Endpoint para obtener categorías
+        Uri.parse('http://localhost:8000/api/categories'),
       );
 
       if (response.statusCode == 200) {
@@ -85,32 +83,23 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     }
   }
 
-  // Filtrar los negocios por nombre y categoría
   void _filterBusinesses() {
     String query = _searchController.text.toLowerCase();
     setState(() {
       filteredBusinesses = businesses
           .where((business) =>
-              business['name'].toLowerCase().contains(query) &&  // Filtrado por nombre
-              (selectedCategory == null || selectedCategory == 'Todos' || business['category_id'].toString() == selectedCategory))  // Filtrado por categoría
+              business['name'].toLowerCase().contains(query) &&
+              (selectedCategory == 'Todos' ||
+                  business['category_id'].toString() == selectedCategory))
           .toList();
     });
   }
 
-  // Filtrar por categoría
-  void _filterByCategory(String category) {
-    setState(() {
-      selectedCategory = category;
-      _filterBusinesses();
-    });
-  }
-
-  // Restablecer el filtro
   void _resetFilter() {
     setState(() {
-      selectedCategory = 'Todos'; 
+      selectedCategory = 'Todos';
       _searchController.clear();
-      filteredBusinesses = businesses; 
+      filteredBusinesses = businesses;
     });
   }
 
@@ -120,155 +109,210 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Negocios disponibles'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle), 
-            tooltip: 'Perfil de Usuario',
-            onPressed: () {
-              print('user_profile');
-            },
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color.fromARGB(0, 110, 143, 140), // Color principal de la AppBar
+      elevation: 4.0, // Sombra para dar profundidad
+      title: Row(
+        children: [
+          Image.asset(
+            'assets/images/EasyBook.png',
+            height: 30,
+            width: 30,
           ),
-          IconButton(
-            icon: const Icon(Icons.bookmark),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UserReserveScreen(),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Cerrar Sesión',
-            onPressed: _logout,
-          ),
-          IconButton(
-            icon: Icon(
-              widget.currentThemeMode == ThemeMode.dark
-                  ? Icons.dark_mode
-                  : Icons.light_mode,
+          const SizedBox(width: 8), // Espacio entre logo y texto
+          const Text(
+            'EasyBook',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white, // Contraste en el texto
             ),
-            tooltip: 'Cambiar Tema',
-            onPressed: () {
-              final newThemeMode = widget.currentThemeMode == ThemeMode.dark
-                  ? ThemeMode.light
-                  : ThemeMode.dark;
-              widget.onThemeChanged(newThemeMode);
-            },
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(120.0), // Altura total del AppBar
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Buscar negocio por nombre...',
-                    border: OutlineInputBorder(),
-                  ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Container(
+            width: 180, // Ajusta el tamaño de la barra de búsqueda
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: 'Buscar negocio...',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: BorderSide.none,
                 ),
-                const SizedBox(height: 10),
-                // Dropdown para seleccionar categoría
-                DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedCategory,
-                  hint: const Text('Filtrar por categoría'),
-                  items: [
-                    const DropdownMenuItem<String>(
-                      value: 'Todos',
-                      child: Text('Todos'),
-                    ),
-                    ...categories.map((category) {
-                      return DropdownMenuItem<String>(
-                        value: category['id'].toString(),
-                        child: Text(category['name']),
-                      );
-                    }),
-                  ],
-                  onChanged: (value) {
-                    if (value == null || value == 'Todos') {
-                      _resetFilter(); // Si seleccionan 'Todos', restablece el filtro
-                    } else {
-                      _filterByCategory(value);
-                    }
-                  },
-                ),
-              ],
+              ),
+              style: const TextStyle(fontSize: 14),
             ),
           ),
         ),
-      ),
-      body: ListView.builder(
-        itemCount: filteredBusinesses.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(filteredBusinesses[index]['name']),
-            subtitle: Text(filteredBusinesses[index]['address']),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateReserveScreen(
-                    businessId: filteredBusinesses[index]['id'],
-                    businessName: filteredBusinesses[index]['name'],
+        IconButton(
+          icon: const Icon(Icons.account_circle),
+          tooltip: 'Perfil de Usuario',
+          onPressed: () {
+            print('user_profile');
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.bookmark),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const UserReserveScreen(),
+              ),
+            );
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.logout),
+          tooltip: 'Cerrar Sesión',
+          onPressed: _logout,
+        ),
+        IconButton(
+          icon: Icon(
+            widget.currentThemeMode == ThemeMode.dark
+                ? Icons.dark_mode
+                : Icons.light_mode,
+          ),
+          tooltip: 'Cambiar Tema',
+          onPressed: () {
+            final newThemeMode = widget.currentThemeMode == ThemeMode.dark
+                ? ThemeMode.light
+                : ThemeMode.dark;
+            widget.onThemeChanged(newThemeMode);
+             },
+        ),
+      ],
+    ),
+    body: Stack(
+      children: [
+        // Fondo con imagen difusa
+        Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/Hotel.jpg'), 
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.4), 
+                      BlendMode.darken,
+                    ),
                   ),
                 ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  void _showThemeDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Selecciona un tema'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+              ),
+        // Capa translúcida con desenfoque
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: Colors.black.withOpacity(0.3), 
+          ),
+        ),
+        // Contenido principal
+        Column(
           children: [
-            RadioListTile<ThemeMode>(
-              title: const Text('Modo Claro'),
-              value: ThemeMode.light,
-              groupValue: widget.currentThemeMode,
-              onChanged: (mode) {
-                widget.onThemeChanged(mode!);
-                Navigator.of(context).pop();
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Negocios disponibles',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  DropdownButton<String>(
+                    value: selectedCategory,
+                    dropdownColor: Colors.teal.withOpacity(0.9), 
+                    style: const TextStyle(color: Colors.white),
+                    items: [
+                      const DropdownMenuItem(
+                        value: 'Todos',
+                        child: Text('Todos'),
+                      ),
+                      ...categories.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category['id'].toString(),
+                          child: Text(category['name']),
+                        );
+                      }).toList(),
+                    ],
+                    onChanged: (value) {
+                      if (value == null || value == 'Todos') {
+                        _resetFilter();
+                      } else {
+                        setState(() {
+                          selectedCategory = value;
+                          _filterBusinesses();
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-            RadioListTile<ThemeMode>(
-              title: const Text('Modo Oscuro'),
-              value: ThemeMode.dark,
-              groupValue: widget.currentThemeMode,
-              onChanged: (mode) {
-                widget.onThemeChanged(mode!);
-                Navigator.of(context).pop();
-              },
-            ),
-            RadioListTile<ThemeMode>(
-              title: const Text('Seguir sistema'),
-              value: ThemeMode.system,
-              groupValue: widget.currentThemeMode,
-              onChanged: (mode) {
-                widget.onThemeChanged(mode!);
-                Navigator.of(context).pop();
-              },
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredBusinesses.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.3), // Fondo translúcido
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          filteredBusinesses[index]['name'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        subtitle: Text(
+                          filteredBusinesses[index]['address'],
+                          style: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        ),
+                        trailing: const Icon(Icons.arrow_forward, color: Colors.white),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreateReserveScreen(
+                                businessId: filteredBusinesses[index]['id'],
+                                businessName: filteredBusinesses[index]['name'],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 }
