@@ -9,10 +9,10 @@ class OwnerHomeScreen extends StatefulWidget {
   final ThemeMode? currentThemeMode;
 
   const OwnerHomeScreen({
-    Key? key,
+    super.key,
     this.onThemeChanged,
     this.currentThemeMode,
-  }) : super(key: key);
+  });
 
   @override
   _OwnerHomeScreenState createState() => _OwnerHomeScreenState();
@@ -95,13 +95,13 @@ Widget build(BuildContext context) {
         }
       },
       itemBuilder: (context) => [
-        PopupMenuItem(
+        const PopupMenuItem(
           value: ThemeMode.light,
-          child: const Text('Tema Claro'),
+          child: Text('Tema Claro'),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: ThemeMode.dark,
-          child: const Text('Tema Oscuro'),
+          child: Text('Tema Oscuro'),
         ),
       ],
       icon: const Icon(Icons.palette),

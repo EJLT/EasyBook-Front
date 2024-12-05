@@ -10,10 +10,10 @@ class UserHomeScreen extends StatefulWidget {
   final ThemeMode currentThemeMode;
 
   const UserHomeScreen({
-    Key? key,
+    super.key,
     required this.onThemeChanged,
     required this.currentThemeMode,
-  }) : super(key: key);
+  });
 
   @override
   _UserHomeScreenState createState() => _UserHomeScreenState();
@@ -23,7 +23,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   List<dynamic> businesses = [];
   List<dynamic> filteredBusinesses = [];
   List<dynamic> categories = [];
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String? selectedCategory;
 
   @override
@@ -108,9 +108,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   // Restablecer el filtro
   void _resetFilter() {
     setState(() {
-      selectedCategory = 'Todos'; // Mostrar todos los negocios
+      selectedCategory = 'Todos'; 
       _searchController.clear();
-      filteredBusinesses = businesses; // Mostrar todos los negocios nuevamente
+      filteredBusinesses = businesses; 
     });
   }
 
@@ -126,6 +126,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       appBar: AppBar(
         title: const Text('Negocios disponibles'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle), 
+            tooltip: 'Perfil de Usuario',
+            onPressed: () {
+              print('user_profile');
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.bookmark),
             onPressed: () {
@@ -158,7 +165,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(120.0), // Altura total del AppBar
+          preferredSize: const Size.fromHeight(120.0), // Altura total del AppBar
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -177,7 +184,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   value: selectedCategory,
                   hint: const Text('Filtrar por categoría'),
                   items: [
-                    DropdownMenuItem<String>(
+                    const DropdownMenuItem<String>(
                       value: 'Todos',
                       child: Text('Todos'),
                     ),
@@ -186,7 +193,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         value: category['id'].toString(),
                         child: Text(category['name']),
                       );
-                    }).toList(),
+                    }),
                   ],
                   onChanged: (value) {
                     if (value == null || value == 'Todos') {

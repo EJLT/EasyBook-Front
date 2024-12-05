@@ -209,7 +209,7 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text("Estadísticas del Negocio"),
+                        title: const Text("Estadísticas del Negocio"),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,7 +222,7 @@ class _BusinessReservationsScreenState extends State<BusinessReservationsScreen>
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text('Cerrar'),
+                            child: const Text('Cerrar'),
                           ),
                         ],
                       );
