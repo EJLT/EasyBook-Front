@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'user_update_screen.dart'; // Asegúrate de importar la pantalla de actualización
+import 'user_update_screen.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   final int reservationId;
@@ -36,7 +36,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       }
 
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/user/reservations/${widget.reservationId}'),
+        Uri.parse(
+            'http://localhost:8000/api/user/reservations/${widget.reservationId}'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -53,7 +54,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     }
   }
 
-  // Actualizar la reserva (esto lo redirige a la pantalla de actualización)
+  // Actualizar la reserva
   Future<void> _updateReservation() async {
     Navigator.push(
       context,
@@ -80,7 +81,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       }
 
       final response = await http.delete(
-        Uri.parse('http://localhost:8000/api/user/reservations/${widget.reservationId}'),
+        Uri.parse(
+            'http://localhost:8000/api/user/reservations/${widget.reservationId}'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -98,28 +100,82 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Información de la Reserva")),
-      body: reservationDetails == null || businessName == null
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
+      appBar: AppBar(
+        backgroundColor:
+            const Color.fromARGB(0, 110, 143, 140), // Fondo transparente
+        elevation: 4.0, // Sombra
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/EasyBook.png',
+              height: 30,
+              width: 30,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              "EasyBook",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Stack(
+        children: [
+          // Imagen de fondo que ocupa toda la pantalla
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/recepcion.jpg'),
+                fit: BoxFit.cover, // La imagen cubre todo el fondo
+                colorFilter: ColorFilter.mode(
+                  Colors.black54, // Oscurece el fondo
+                  BlendMode.darken,
+                ),
+              ),
+            ),
+          ),
+          // Contenido de la pantalla que se desplaza
+          SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Detalles #${reservationDetails!['id']}", style: const TextStyle(fontSize: 24)),
-                  Text("Estado: ${reservationDetails!['status']}", style: const TextStyle(fontSize: 18)),
-                  Text("Negocio: $businessName", style: const TextStyle(fontSize: 18)),
-                  Text("Fecha: ${reservationDetails!['reservation_date']}", style: const TextStyle(fontSize: 18)),
-                  Text("Hora: ${reservationDetails!['reservation_time']}", style: const TextStyle(fontSize: 18)),
+                  const Text(
+                    "Información de la Reserva",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildDetailRow("Negocio:", businessName!),
+                  _buildDetailRow("Estado:", reservationDetails!['status']),
+                  _buildDetailRow(
+                      "Fecha:", reservationDetails!['reservation_date']),
+                  _buildDetailRow(
+                      "Hora:", reservationDetails!['reservation_time']),
+                  const SizedBox(height: 24),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
                         onPressed: _updateReservation,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                        ),
                         child: const Text("Actualizar"),
                       ),
                       ElevatedButton(
                         onPressed: _deleteReservation,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                        ),
                         child: const Text("Eliminar"),
                       ),
                     ],
@@ -127,6 +183,38 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+// Método para construir las filas de los detalles
+  Widget _buildDetailRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

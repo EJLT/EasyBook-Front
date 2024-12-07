@@ -67,6 +67,16 @@ flutter:
       - assets/images/EasyBook.png
       - assets/images/peluqueria.jpg
       - assets/images/Hotel.jpg
+      - assets/images/Sala.jpg
+      - assets/images/recepcion.jpg
+      - assets/images/Reserva.jpg
+      - assets/images/oficina.jpg
+      - assets/images/boutique.jpg
+      - assets/images/cafetería.jpg
+      - assets/images/moderna.jpg
+      - assets/images/oscuro.jpg
+      - assets/images/paisaje.jpg
+      - assets/images/comercio.jpg
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

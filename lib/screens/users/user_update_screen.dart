@@ -83,71 +83,143 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Actualizar Reserva")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(0, 79, 98, 184),
+        elevation: 4.0,
+        title: Row(
           children: [
-            Text("Actualizar la reserva #${widget.reservationId}",
-                style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _dateController,
-              decoration: InputDecoration(
-                labelText: "Fecha",
-                hintText: "Selecciona una fecha",
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () async {
-                    // Mostrar un DatePicker para seleccionar la fecha
-                    final pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.parse(_dateController.text),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2101),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        _dateController.text =
-                            pickedDate.toLocal().toString().split(' ')[0];
-                      });
-                    }
-                  },
-                ),
-              ),
+            Image.asset(
+              'assets/images/EasyBook.png',
+              height: 30,
+              width: 30,
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _timeController,
-              decoration: InputDecoration(
-                labelText: "Hora",
-                hintText: "Selecciona una hora",
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.access_time),
-                  onPressed: () async {
-                    // Mostrar un TimePicker para seleccionar la hora
-                    final pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.fromDateTime(DateTime.parse(
-                          "2000-01-01 ${_timeController.text}:00")),
-                    );
-                    if (pickedTime != null) {
-                      setState(() {
-                        _timeController.text =
-                            "${pickedTime.hour.toString().padLeft(2, '0')}:${pickedTime.minute.toString().padLeft(2, '0')}";
-                      });
-                    }
-                  },
-                ),
+            const SizedBox(width: 8),
+            const Text(
+              'EasyBook',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateReservation,
-              child: const Text("Actualizar Reserva"),
             ),
           ],
+        ),
+      ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image:
+                AssetImage('assets/images/comercio.jpg'), // Fondo personalizado
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              width: 350,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white.withOpacity(0.5)),
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.black.withOpacity(0.3), // Fondo translúcido
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Actualizar Reserva',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Campos de texto con validación
+                      TextField(
+                        controller: _dateController,
+                        decoration: InputDecoration(
+                          labelText: "Fecha",
+                          hintText: "Selecciona una fecha",
+                          labelStyle: const TextStyle(color: Colors.white),
+                          filled: true,
+                          fillColor: Colors.white24,
+                          border: OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () async {
+                              final pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate:
+                                    DateTime.parse(_dateController.text),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2101),
+                              );
+                              if (pickedDate != null) {
+                                setState(() {
+                                  _dateController.text = pickedDate
+                                      .toLocal()
+                                      .toString()
+                                      .split(' ')[0];
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: _timeController,
+                        decoration: InputDecoration(
+                          labelText: "Hora",
+                          hintText: "Selecciona una hora",
+                          labelStyle: const TextStyle(color: Colors.white),
+                          filled: true,
+                          fillColor: Colors.white24,
+                          border: OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.access_time),
+                            onPressed: () async {
+                              final pickedTime = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.fromDateTime(
+                                    DateTime.parse(
+                                        "2000-01-01 ${_timeController.text}:00")),
+                              );
+                              if (pickedTime != null) {
+                                setState(() {
+                                  _timeController.text =
+                                      "${pickedTime.hour.toString().padLeft(2, '0')}:${pickedTime.minute.toString().padLeft(2, '0')}";
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _updateReservation,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(251, 114, 118, 126),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
+                          minimumSize: const Size(300, 50),
+                        ),
+                        child: const Text("Actualizar Reserva"),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

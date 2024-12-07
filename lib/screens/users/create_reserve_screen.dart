@@ -115,37 +115,107 @@ class _CreateReserveScreenState extends State<CreateReserveScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            "Crear Reserva en ${widget.businessName}"), // Mostrar el nombre del negocio
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        backgroundColor:
+            const Color.fromARGB(0, 110, 143, 140), // Fondo del AppBar
+        elevation: 4.0, // Sombra del AppBar
+        title: Row(
           children: [
-            Text(
-              "Negocio: ${widget.businessName}",
-              style: const TextStyle(fontSize: 24),
+            Image.asset(
+              'assets/images/EasyBook.png',
+              height: 30,
+              width: 30,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _selectDate,
-              child: Text("Seleccionar Fecha: $_formattedDate"),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _selectTime,
-              child: Text("Seleccionar Hora: $_formattedTime"),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _createReservation,
-              child: const Text("Crear Reserva"),
+            const SizedBox(width: 8),
+            const Text(
+              "EasyBook",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 0, 0, 0), // Texto en negro
+              ),
             ),
           ],
         ),
+      ),
+      body: Stack(
+        children: [
+          // Imagen de fondo que cubre toda la pantalla
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/paisaje.jpg'),
+                fit: BoxFit.cover, // La imagen cubre todo el fondo
+                alignment: Alignment.center, // Centra la imagen
+              ),
+            ),
+          ),
+          // Contenido de la pantalla que se desplaza
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Título de la pantalla
+                  Text(
+                    "Negocio: ${widget.businessName}",
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Texto blanco
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Botón para seleccionar fecha
+                  ElevatedButton(
+                    onPressed: _selectDate,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDarkMode
+                          ? Colors.blueGrey
+                          : Colors.blueAccent, // Cambia el color según el modo
+                      foregroundColor: isDarkMode
+                          ? Colors.white
+                          : Colors.black, // Color del texto según el modo
+                    ),
+                    child: Text("Seleccionar Fecha: $_formattedDate"),
+                  ),
+                  const SizedBox(height: 20),
+                  // Botón para seleccionar hora
+                  ElevatedButton(
+                    onPressed: _selectTime,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDarkMode
+                          ? Colors.blueGrey
+                          : Colors.blueAccent, // Cambia el color según el modo
+                      foregroundColor: isDarkMode
+                          ? Colors.white
+                          : Colors.black, // Color del texto según el modo
+                    ),
+                    child: Text("Seleccionar Hora: $_formattedTime"),
+                  ),
+                  const SizedBox(height: 20),
+                  // Botón para crear reserva
+                  ElevatedButton(
+                    onPressed: _createReservation,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDarkMode
+                          ? Colors.greenAccent
+                          : Colors.green, // Cambia el color según el modo
+                      foregroundColor: isDarkMode
+                          ? Colors.black
+                          : Colors.white, // Color del texto según el modo
+                    ),
+                    child: const Text("Crear Reserva"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

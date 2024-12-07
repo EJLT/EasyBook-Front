@@ -38,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/api/register'),
+        Uri.parse('http://10.0.2.2:8000/api/register'),
         headers: {'Accept': 'application/json'},
         body: {
           'name': name,
@@ -90,24 +90,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/peluqueria.jpg'), 
+            image: AssetImage('assets/images/peluqueria.jpg'),
             fit: BoxFit.cover,
           ),
         ),
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              width: 350, 
+              width: 350,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.white.withOpacity(0.5)),
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.black.withOpacity(0.3), 
+                color: Colors.black.withOpacity(0.3),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), 
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
@@ -203,7 +203,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            backgroundColor: const Color.fromARGB(255, 159, 162, 165), // Color de fondo
+                            backgroundColor: const Color.fromARGB(
+                                255, 159, 162, 165), // Color de fondo
                           ),
                           child: const Text(
                             'Confirmar',
@@ -215,7 +216,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () {
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()),
                               (route) => false,
                             );
                           },

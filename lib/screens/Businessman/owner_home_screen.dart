@@ -45,7 +45,6 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
       final token = prefs.getString('token');
 
       if (token == null || token.isEmpty) {
-        print("Token no encontrado");
         Navigator.pushReplacementNamed(context, '/login');
         return;
       }
@@ -63,119 +62,177 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
           _businesses = businesses;
         });
       } else {
-        print("Error: Código de estado ${response.statusCode}");
         Navigator.pushReplacementNamed(context, '/login');
       }
     } catch (e) {
-      print("Excepción al cargar los negocios: $e");
       Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Borra todos los datos almacenados
+    await prefs.clear();
     Navigator.pushReplacementNamed(context, '/login');
   }
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-  title: const Text(
-    'Panel del Propietario',
-    style: TextStyle(fontWeight: FontWeight.bold),
-  ),
-  backgroundColor: Colors.blueAccent,
-  actions: [
-    PopupMenuButton<ThemeMode>(
-      onSelected: (themeMode) {
-        if (widget.onThemeChanged != null) {
-          widget.onThemeChanged!(themeMode);
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: ThemeMode.light,
-          child: Text('Tema Claro'),
-        ),
-        const PopupMenuItem(
-          value: ThemeMode.dark,
-          child: Text('Tema Oscuro'),
-        ),
-      ],
-      icon: const Icon(Icons.palette),
-      tooltip: 'Cambiar Tema',
-    ),
-    IconButton(
-      icon: const Icon(Icons.add_business), 
-      tooltip: 'Añadir Negocio',
-      onPressed: () {
-        Navigator.pushNamed(context, '/owner_add');
-      },
-    ),
-    IconButton(
-      icon: const Icon(Icons.logout),
-      tooltip: 'Cerrar Sesión',
-      onPressed: _logout,
-    ),
-          
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = widget.currentThemeMode == ThemeMode.dark;
+    final containerColor = isDarkMode
+        ? Colors.grey[850]?.withOpacity(0.9)
+        : Colors.white.withOpacity(0.9);
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(0, 79, 98, 184),
+        elevation: 4.0,
+        title: Row(
           children: [
-            const Text(
-              'Mis Negocios',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
+            Image.asset(
+              'assets/images/EasyBook.png',
+              height: 30,
+              width: 30,
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: _businesses.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: _businesses.length,
-                      itemBuilder: (context, index) {
-                        final business = _businesses[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 4,
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            title: Text(
-                              business['name'],
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              business['address'],
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    BusinessDetailsScreen(businessId: business['id']),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+            const SizedBox(width: 8),
+            const Text(
+              'EasyBook',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_business),
+            tooltip: 'Añadir Negocio',
+            onPressed: () {
+              Navigator.pushNamed(context, '/owner_add');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar Sesión',
+            onPressed: _logout,
+          ),
+          IconButton(
+            icon: Icon(
+              isDarkMode ? Icons.light_mode : Icons.dark_mode,
+            ),
+            tooltip: 'Cambiar Tema',
+            onPressed: () {
+              final newThemeMode =
+                  isDarkMode ? ThemeMode.light : ThemeMode.dark;
+              widget.onThemeChanged!(newThemeMode);
+            },
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Fondo con imagen difusa
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/oficina.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black45,
+                  BlendMode.darken,
+                ),
+              ),
+            ),
+          ),
+          // Lista de negocios
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Mis Negocios',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(0, 255, 255, 255),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: _businesses.isEmpty
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : GridView.builder(
+                        padding: const EdgeInsets.all(8.0),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3, // Cambiado a 3x3
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: _businesses.length,
+                        itemBuilder: (context, index) {
+                          final business = _businesses[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BusinessDetailsScreen(
+                                    businessId: business['id'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: containerColor,
+                                borderRadius: BorderRadius.circular(16.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    business['name'],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: textColor,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    business['address'],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: textColor.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

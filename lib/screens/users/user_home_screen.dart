@@ -109,210 +109,217 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      backgroundColor: const Color.fromARGB(0, 110, 143, 140), // Color principal de la AppBar
-      elevation: 4.0, // Sombra para dar profundidad
-      title: Row(
-        children: [
-          Image.asset(
-            'assets/images/EasyBook.png',
-            height: 30,
-            width: 30,
-          ),
-          const SizedBox(width: 8), // Espacio entre logo y texto
-          const Text(
-            'EasyBook',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white, // Contraste en el texto
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Container(
-            width: 180, // Ajusta el tamaño de la barra de búsqueda
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Buscar negocio...',
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.account_circle),
-          tooltip: 'Perfil de Usuario',
-          onPressed: () {
-            print('user_profile');
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.bookmark),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const UserReserveScreen(),
-              ),
-            );
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.logout),
-          tooltip: 'Cerrar Sesión',
-          onPressed: _logout,
-        ),
-        IconButton(
-          icon: Icon(
-            widget.currentThemeMode == ThemeMode.dark
-                ? Icons.dark_mode
-                : Icons.light_mode,
-          ),
-          tooltip: 'Cambiar Tema',
-          onPressed: () {
-            final newThemeMode = widget.currentThemeMode == ThemeMode.dark
-                ? ThemeMode.light
-                : ThemeMode.dark;
-            widget.onThemeChanged(newThemeMode);
-             },
-        ),
-      ],
-    ),
-    body: Stack(
-      children: [
-        // Fondo con imagen difusa
-        Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/Hotel.jpg'), 
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.4), 
-                      BlendMode.darken,
-                    ),
-                  ),
-                ),
-              ),
-        // Capa translúcida con desenfoque
-        BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: Colors.black.withOpacity(0.3), 
-          ),
-        ),
-        // Contenido principal
-        Column(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(
+            0, 110, 143, 140), // Color principal de la AppBar
+        elevation: 4.0, // Sombra para dar profundidad
+        title: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Negocios disponibles',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  DropdownButton<String>(
-                    value: selectedCategory,
-                    dropdownColor: Colors.teal.withOpacity(0.9), 
-                    style: const TextStyle(color: Colors.white),
-                    items: [
-                      const DropdownMenuItem(
-                        value: 'Todos',
-                        child: Text('Todos'),
-                      ),
-                      ...categories.map((category) {
-                        return DropdownMenuItem<String>(
-                          value: category['id'].toString(),
-                          child: Text(category['name']),
-                        );
-                      }).toList(),
-                    ],
-                    onChanged: (value) {
-                      if (value == null || value == 'Todos') {
-                        _resetFilter();
-                      } else {
-                        setState(() {
-                          selectedCategory = value;
-                          _filterBusinesses();
-                        });
-                      }
-                    },
-                  ),
-                ],
-              ),
+            Image.asset(
+              'assets/images/EasyBook.png',
+              height: 30,
+              width: 30,
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredBusinesses.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3), // Fondo translúcido
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          filteredBusinesses[index]['name'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        subtitle: Text(
-                          filteredBusinesses[index]['address'],
-                          style: TextStyle(color: Colors.white.withOpacity(0.8)),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward, color: Colors.white),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CreateReserveScreen(
-                                businessId: filteredBusinesses[index]['id'],
-                                businessName: filteredBusinesses[index]['name'],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
+            const SizedBox(width: 8), // Espacio entre logo y texto
+            const Text(
+              'EasyBook',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white, // Contraste en el texto
               ),
             ),
           ],
         ),
-      ],
-    ),
-  );
-}
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Container(
+              width: 180, // Ajusta el tamaño de la barra de búsqueda
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: 'Buscar negocio...',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            tooltip: 'Perfil de Usuario',
+            onPressed: () {
+              print('user_profile');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.bookmark),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UserReserveScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar Sesión',
+            onPressed: _logout,
+          ),
+          IconButton(
+            icon: Icon(
+              widget.currentThemeMode == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+            ),
+            tooltip: 'Cambiar Tema',
+            onPressed: () {
+              final newThemeMode = widget.currentThemeMode == ThemeMode.dark
+                  ? ThemeMode.light
+                  : ThemeMode.dark;
+              widget.onThemeChanged(newThemeMode);
+            },
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Fondo con imagen difusa
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/Hotel.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.4),
+                  BlendMode.darken,
+                ),
+              ),
+            ),
+          ),
+          // Capa translúcida con desenfoque
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              color: Colors.black.withOpacity(0.3),
+            ),
+          ),
+          // Contenido principal
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Negocios disponibles',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    DropdownButton<String>(
+                      value: selectedCategory,
+                      dropdownColor: const Color.fromARGB(0, 150, 170, 168)
+                          .withOpacity(0.9),
+                      style: const TextStyle(color: Colors.white),
+                      items: [
+                        const DropdownMenuItem(
+                          value: 'Todos',
+                          child: Text('Todos'),
+                        ),
+                        ...categories.map((category) {
+                          return DropdownMenuItem<String>(
+                            value: category['id'].toString(),
+                            child: Text(category['name']),
+                          );
+                        }).toList(),
+                      ],
+                      onChanged: (value) {
+                        if (value == null || value == 'Todos') {
+                          _resetFilter();
+                        } else {
+                          setState(() {
+                            selectedCategory = value;
+                            _filterBusinesses();
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredBusinesses.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white
+                              .withOpacity(0.3), // Fondo translúcido
+                          borderRadius: BorderRadius.circular(16.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            filteredBusinesses[index]['name'],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          subtitle: Text(
+                            filteredBusinesses[index]['address'],
+                            style:
+                                TextStyle(color: Colors.white.withOpacity(0.8)),
+                          ),
+                          trailing: const Icon(Icons.arrow_forward,
+                              color: Colors.white),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreateReserveScreen(
+                                  businessId: filteredBusinesses[index]['id'],
+                                  businessName: filteredBusinesses[index]
+                                      ['name'],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
