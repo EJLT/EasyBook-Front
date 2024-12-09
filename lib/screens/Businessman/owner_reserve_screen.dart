@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class BusinessReservationsScreen extends StatefulWidget {
   final int? businessId;
@@ -22,7 +23,7 @@ class _BusinessReservationsScreenState
   void initState() {
     super.initState();
     _loadReservations();
-    _loadStatistics(); // Cargar estadísticas también
+    _loadStatistics();
   }
 
   Future<void> _loadReservations() async {
@@ -227,8 +228,8 @@ class _BusinessReservationsScreenState
           ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
-            onPressed: () {
-              // Mostrar estadísticas
+            onPressed: () async {
+              await _loadStatistics(); // Espera a que se carguen las estadísticas
               showDialog(
                 context: context,
                 builder: (context) {
@@ -236,10 +237,81 @@ class _BusinessReservationsScreenState
                     title: const Text("Estadísticas del Negocio"),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: _stats.entries.map((entry) {
-                        return Text('${entry.key}: ${entry.value}');
-                      }).toList(),
+                      children: [
+                        if (_stats.isNotEmpty)
+                          SizedBox(
+                            height: 300, // Altura ajustada para un mejor diseño
+                            child: BarChart(
+                              BarChartData(
+                                gridData: FlGridData(
+                                    show: false), // Desactiva la cuadrícula
+                                titlesData: FlTitlesData(
+                                  leftTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                        showTitles:
+                                            false), // No mostrar títulos en el eje Y
+                                  ),
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(showTitles: true),
+                                  ),
+                                ),
+                                borderData:
+                                    FlBorderData(show: true), // Mostrar borde
+                                barGroups: _stats.entries.map((entry) {
+                                  int xValue;
+                                  Color barColor;
+
+                                  switch (entry.key) {
+                                    case 'confirmadas':
+                                      xValue = 0;
+                                      barColor = Colors
+                                          .green; // Verde para confirmadas
+                                      break;
+                                    case 'canceladas':
+                                      xValue = 1;
+                                      barColor =
+                                          Colors.red; // Rojo para canceladas
+                                      break;
+                                    case 'pendientes':
+                                      xValue = 2;
+                                      barColor = Colors
+                                          .orange; // Naranja para pendientes
+                                      break;
+                                    default:
+                                      xValue = 3; // Valor por defecto
+                                      barColor =
+                                          Colors.blue; // Azul por defecto
+                                  }
+
+                                  return BarChartGroupData(
+                                    x: xValue,
+                                    barRods: [
+                                      BarChartRodData(
+                                        toY: entry.value.toDouble(),
+                                        color: barColor,
+                                        width: 25, // Ancho de la barra ajustado
+                                        borderRadius: BorderRadius.circular(
+                                            6), // Barras con bordes redondeados
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 16),
+                        // Leyenda mejorada
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildLegendItem(Colors.green, "Confirmadas"),
+                            const SizedBox(width: 16),
+                            _buildLegendItem(Colors.red, "Canceladas"),
+                            const SizedBox(width: 16),
+                            _buildLegendItem(Colors.orange, "Pendientes"),
+                          ],
+                        ),
+                      ],
                     ),
                     actions: [
                       TextButton(
@@ -362,6 +434,20 @@ class _BusinessReservationsScreenState
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          height: 10,
+          width: 20,
+          color: color,
+        ),
+        const SizedBox(width: 8),
+        Text(label),
+      ],
     );
   }
 }
